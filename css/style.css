@@ -1,0 +1,309 @@
+/* ==========================================================================
+   Tornado Shawarma — animated digital menu
+   Brand: charcoal / black, white, warm red-orange. Minimal, premium, calm.
+   ========================================================================== */
+
+:root {
+  --bg: #050505;
+  --ember: 255, 92, 48;          /* warm red-orange, used only as faint ambient light */
+  --gap: 2vh;                    /* breathing room around the artwork on desktop / TV */
+  --gap-x: 12px;                 /* horizontal margin on narrow screens */
+  --stage-ar: 1122 / 1402;       /* overwritten from manifest by JS */
+  --feather: 14px;               /* soft edge on animated crops (updated by JS on resize) */
+  --shade: 0.78;                 /* how dark the base page is during the entrance sequence */
+  --veil-blur: 22px;             /* soft-focus amount of the base page during the entrance */
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #fff;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+body.is-idle { cursor: none; }
+
+/* --------------------------------------------------------------------------
+   Ambient background — always BEHIND the artwork
+   -------------------------------------------------------------------------- */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--bg);
+}
+
+.bg__ambient {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse 55% 45% at 50% 58%, rgba(var(--ember), 0.16), transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(var(--ember), 0.08), transparent 70%);
+  opacity: 0.7;
+  will-change: opacity;
+}
+
+.bg__dust {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+}
+
+.bg__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+/* --------------------------------------------------------------------------
+   Viewer + stage (exact artwork aspect ratio, object-fit: contain behaviour)
+   -------------------------------------------------------------------------- */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  perspective: 1400px;
+}
+
+.stage {
+  position: relative;
+  aspect-ratio: var(--stage-ar);
+  /* never taller than ~96vh, never wider than the viewport */
+  height: min(96vh, calc((100vw - 2 * var(--gap-x)) / (var(--stage-ar))));
+  height: min(96svh, calc((100svw - 2 * var(--gap-x)) / (var(--stage-ar))));
+  max-width: calc(100vw - 2 * var(--gap-x));
+  border-radius: clamp(4px, 0.6vw, 10px);
+  overflow: hidden;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  background: #0a0a0a;
+  transform: translateZ(0);
+}
+
+/* --------------------------------------------------------------------------
+   Pages
+   -------------------------------------------------------------------------- */
+.page {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  opacity: 0;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.page.is-active { visibility: visible; }
+
+/* The untouched approved artwork — always the source of truth */
+.page__full {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: fill; /* stage already has the exact aspect ratio */
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* Soft-focus copy of the artwork (only during the entrance; fades out on reveal) */
+.page__blur {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: fill;
+  pointer-events: none;
+  filter: blur(var(--veil-blur)) saturate(0.9);
+  transform: scale(1.06); /* hides the soft edges the blur creates */
+  will-change: opacity;
+}
+
+/* Dark veil over the base page during the entrance sequence; fades to 0 on reveal */
+.page__shade {
+  position: absolute;
+  inset: 0;
+  background: #030303;
+  opacity: var(--shade);
+  pointer-events: none;
+}
+
+.page__layers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Soft warm light behind hero food (never over text, always behind the crop) */
+.glow {
+  position: absolute;
+  opacity: 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 55%,
+    rgba(255, 120, 60, 0.28) 0%,
+    rgba(255, 90, 40, 0.14) 32%,
+    rgba(255, 70, 30, 0.04) 58%,
+    transparent 72%);
+  filter: blur(6px);
+  will-change: opacity, transform;
+}
+
+/* One animated crop. Positioned by manifest percentages (see layers.js). */
+.layer {
+  position: absolute;
+  overflow: hidden;
+  opacity: 0;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  /* Feathered edges so moving crops blend into the dark base instead of reading as boxes.
+     At rest the pixels under the feather are identical to the full page, so nothing is lost. */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 var(--feather), #000 calc(100% - var(--feather)), transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 var(--feather), #000 calc(100% - var(--feather)), transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 var(--feather), #000 calc(100% - var(--feather)), transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 var(--feather), #000 calc(100% - var(--feather)), transparent 100%);
+  mask-composite: intersect;
+}
+
+.layer--nofeather {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* inner group lets us do parallax / inner zoom without exposing gaps */
+.layer__inner {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.layer__img,
+.layer__fill {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* --------------------------------------------------------------------------
+   Controls
+   -------------------------------------------------------------------------- */
+.dots {
+  position: fixed;
+  left: 50%;
+  bottom: max(10px, calc((100vh - 96vh) / 2 - 14px));
+  bottom: max(10px, calc((100svh - 96svh) / 2 - 14px));
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 10px;
+  padding: 6px 10px;
+  opacity: 0.55;
+  transition: opacity 0.4s ease;
+}
+
+.dots:hover { opacity: 0.95; }
+body.is-idle .dots { opacity: 0.25; }
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: background 0.35s ease, transform 0.35s ease;
+}
+
+.dot:hover { background: rgba(255, 255, 255, 0.7); }
+.dot.is-active {
+  background: rgb(var(--ember));
+  transform: scale(1.25);
+}
+
+.dot:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Loader
+   -------------------------------------------------------------------------- */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  transition: opacity 0.6s ease;
+}
+
+.loader.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader__bar {
+  width: min(160px, 40vw);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.loader__bar span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: rgb(var(--ember));
+  transition: width 0.25s ease;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 720px) {
+  :root { --gap-x: 8px; }
+  .stage { border-radius: 4px; }
+  .dots { bottom: 8px; }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion: only crossfade the full pages
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .bg__ambient { opacity: 0.5; }
+  .page__shade,
+  .page__blur,
+  .page__layers,
+  .glow { display: none; }
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="description" content="Tornado Shawarma — animated digital menu" />
+  <title>تورنيدو شاورما — قائمة الطعام</title>
+
+  <link rel="preload" as="image" href="assets/page1_full.png" />
+  <link rel="preload" as="image" href="assets/page2_full.png" />
+  <link rel="preload" as="image" href="assets/page3_full.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Ambient background: sits BEHIND the menu artwork, never over it -->
+  <div class="bg" aria-hidden="true">
+    <div class="bg__ambient"></div>
+    <canvas class="bg__dust"></canvas>
+    <div class="bg__vignette"></div>
+  </div>
+
+  <!-- Menu viewer -->
+  <main class="viewer" id="viewer" aria-label="Tornado Shawarma menu">
+    <!-- .stage keeps the exact aspect ratio of the artwork; pages are injected here by JS -->
+    <div class="stage" id="stage"></div>
+  </main>
+
+  <!-- Minimal controls -->
+  <nav class="dots" id="dots" dir="ltr" aria-label="Menu pages"></nav>
+
+  <!-- Loader (shown until every PNG is decoded) -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader__bar"><span id="loaderFill"></span></div>
+  </div>
+
+  <!-- GSAP (vendored so the page also works offline / from file://) -->
+  <script src="vendor/gsap.min.js"></script>
+  <script src="vendor/CustomEase.min.js"></script>
+
+  <!-- App -->
+  <script src="js/manifest-data.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/layers.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/background.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

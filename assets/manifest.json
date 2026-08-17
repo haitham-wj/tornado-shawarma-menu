@@ -1,0 +1,260 @@
+{
+  "notes": "All crops are exact pixel crops from the approved menu pages; no redesign or regeneration was applied.",
+  "pages": {
+    "page1": {
+      "full": "page1_full.png",
+      "width": 1122,
+      "height": 1402,
+      "layers": {
+        "header": {
+          "file": "page1/header.png",
+          "box_px": [
+            220,
+            15,
+            900,
+            440
+          ],
+          "x_pct": 19.6078,
+          "y_pct": 1.0699,
+          "w_pct": 60.6061,
+          "h_pct": 30.3138
+        },
+        "shawarma_food": {
+          "file": "page1/shawarma_food.png",
+          "box_px": [
+            0,
+            400,
+            545,
+            875
+          ],
+          "x_pct": 0.0,
+          "y_pct": 28.5307,
+          "w_pct": 48.574,
+          "h_pct": 33.8802
+        },
+        "shawarma_text": {
+          "file": "page1/shawarma_text.png",
+          "box_px": [
+            515,
+            440,
+            1095,
+            835
+          ],
+          "x_pct": 45.9002,
+          "y_pct": 31.3837,
+          "w_pct": 51.6934,
+          "h_pct": 28.174
+        },
+        "arabic_food": {
+          "file": "page1/arabic_food.png",
+          "box_px": [
+            0,
+            855,
+            520,
+            1285
+          ],
+          "x_pct": 0.0,
+          "y_pct": 60.9843,
+          "w_pct": 46.3458,
+          "h_pct": 30.6705
+        },
+        "arabic_text": {
+          "file": "page1/arabic_text.png",
+          "box_px": [
+            515,
+            850,
+            1095,
+            1255
+          ],
+          "x_pct": 45.9002,
+          "y_pct": 60.6277,
+          "w_pct": 51.6934,
+          "h_pct": 28.8873
+        },
+        "footer": {
+          "file": "page1/footer.png",
+          "box_px": [
+            25,
+            1275,
+            1075,
+            1385
+          ],
+          "x_pct": 2.2282,
+          "y_pct": 90.9415,
+          "w_pct": 93.5829,
+          "h_pct": 7.8459
+        }
+      }
+    },
+    "page2": {
+      "full": "page2_full.png",
+      "width": 1122,
+      "height": 1402,
+      "layers": {
+        "header": {
+          "file": "page2/header.png",
+          "box_px": [
+            220,
+            15,
+            900,
+            405
+          ],
+          "x_pct": 19.6078,
+          "y_pct": 1.0699,
+          "w_pct": 60.6061,
+          "h_pct": 27.8174
+        },
+        "bashka_food": {
+          "file": "page2/bashka_food.png",
+          "box_px": [
+            0,
+            385,
+            620,
+            815
+          ],
+          "x_pct": 0.0,
+          "y_pct": 27.4608,
+          "w_pct": 55.2585,
+          "h_pct": 30.6705
+        },
+        "bashka_text": {
+          "file": "page2/bashka_text.png",
+          "box_px": [
+            620,
+            425,
+            1080,
+            765
+          ],
+          "x_pct": 55.2585,
+          "y_pct": 30.3138,
+          "w_pct": 40.9982,
+          "h_pct": 24.2511
+        },
+        "shawarma_plate_food": {
+          "file": "page2/shawarma_plate_food.png",
+          "box_px": [
+            0,
+            815,
+            610,
+            1225
+          ],
+          "x_pct": 0.0,
+          "y_pct": 58.1312,
+          "w_pct": 54.3672,
+          "h_pct": 29.2439
+        },
+        "shawarma_plate_text": {
+          "file": "page2/shawarma_plate_text.png",
+          "box_px": [
+            620,
+            835,
+            1080,
+            1195
+          ],
+          "x_pct": 55.2585,
+          "y_pct": 59.5578,
+          "w_pct": 40.9982,
+          "h_pct": 25.6776
+        },
+        "footer": {
+          "file": "page2/footer.png",
+          "box_px": [
+            25,
+            1210,
+            1070,
+            1325
+          ],
+          "x_pct": 2.2282,
+          "y_pct": 86.3053,
+          "w_pct": 93.1373,
+          "h_pct": 8.2026
+        }
+      }
+    },
+    "page3": {
+      "full": "page3_full.png",
+      "width": 1122,
+      "height": 1402,
+      "layers": {
+        "header": {
+          "file": "page3/header.png",
+          "box_px": [
+            220,
+            15,
+            900,
+            410
+          ],
+          "x_pct": 19.6078,
+          "y_pct": 1.0699,
+          "w_pct": 60.6061,
+          "h_pct": 28.174
+        },
+        "burger_food": {
+          "file": "page3/burger_food.png",
+          "box_px": [
+            0,
+            405,
+            520,
+            870
+          ],
+          "x_pct": 0.0,
+          "y_pct": 28.8873,
+          "w_pct": 46.3458,
+          "h_pct": 33.1669
+        },
+        "burger_text": {
+          "file": "page3/burger_text.png",
+          "box_px": [
+            500,
+            430,
+            1085,
+            815
+          ],
+          "x_pct": 44.5633,
+          "y_pct": 30.6705,
+          "w_pct": 52.139,
+          "h_pct": 27.4608
+        },
+        "extras_food": {
+          "file": "page3/extras_food.png",
+          "box_px": [
+            0,
+            865,
+            590,
+            1245
+          ],
+          "x_pct": 0.0,
+          "y_pct": 61.6976,
+          "w_pct": 52.5847,
+          "h_pct": 27.1041
+        },
+        "extras_text": {
+          "file": "page3/extras_text.png",
+          "box_px": [
+            590,
+            865,
+            1085,
+            1215
+          ],
+          "x_pct": 52.5847,
+          "y_pct": 61.6976,
+          "w_pct": 44.1176,
+          "h_pct": 24.9643
+        },
+        "footer": {
+          "file": "page3/footer.png",
+          "box_px": [
+            25,
+            1240,
+            1070,
+            1345
+          ],
+          "x_pct": 2.2282,
+          "y_pct": 88.4451,
+          "w_pct": 93.1373,
+          "h_pct": 7.4893
+        }
+      }
+    }
+  }
+}

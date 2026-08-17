@@ -1,0 +1,17 @@
+{
+  "name": "tornado-shawarma-digital-menu",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cinematic animated digital menu for Tornado Shawarma (plain HTML/CSS/JS + GSAP)",
+  "scripts": {
+    "dev": "serve -l 5173 --no-clipboard .",
+    "start": "serve -l 5173 --no-clipboard .",
+    "manifest:embed": "node scripts/embed-manifest.js"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  },
+  "dependencies": {
+    "gsap": "^3.15.0"
+  }
+}
