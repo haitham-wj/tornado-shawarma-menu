@@ -80,13 +80,56 @@
     viewer.addEventListener('pointercancel', () => { tracking = false; });
 
     // ---- Fullscreen -----------------------------------------------------------
-    function toggleFullscreen() {
-      const doc = document;
-      const el = doc.documentElement;
-      if (!doc.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(() => {});
-      else if (doc.exitFullscreen) doc.exitFullscreen().catch(() => {});
+    const doc = document;
+    const root = doc.documentElement;
+    const fsSupported = !!(root.requestFullscreen || root.webkitRequestFullscreen);
+    const isFullscreen = () => !!(doc.fullscreenElement || doc.webkitFullscreenElement);
+    const params = new URLSearchParams(location.search);
+    const runningAsApp = window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches
+      || navigator.standalone === true;
+    const autoFs = NS.CONFIG.autoFullscreen && params.get('fs') !== '0' && fsSupported && !runningAsApp;
+
+    function enterFullscreen() {
+      if (isFullscreen()) return Promise.resolve();
+      const fn = root.requestFullscreen || root.webkitRequestFullscreen;
+      try {
+        const r = fn.call(root, { navigationUI: 'hide' });
+        return r && r.catch ? r.catch(() => {}) : Promise.resolve();
+      } catch (e) { return Promise.resolve(); }
     }
+    function exitFullscreen() {
+      const fn = doc.exitFullscreen || doc.webkitExitFullscreen;
+      if (fn) { try { const r = fn.call(doc); r && r.catch && r.catch(() => {}); } catch (e) { /* ignore */ } }
+    }
+    function toggleFullscreen() { isFullscreen() ? exitFullscreen() : enterFullscreen(); }
     viewer.addEventListener('dblclick', toggleFullscreen);
+
+    const hint = document.getElementById('fsHint');
+    let armed = true;      // auto-enter on the next gesture
+    let wasFullscreen = false;
+    function syncFsClass() {
+      const fs = isFullscreen();
+      document.body.classList.toggle('is-fullscreen', fs || runningAsApp);
+      if (fs) wasFullscreen = true;
+      else if (wasFullscreen) armed = false;   // user left fullscreen on purpose (Esc / F): stop auto re-entering
+    }
+    ['fullscreenchange', 'webkitfullscreenchange'].forEach((ev) => doc.addEventListener(ev, syncFsClass));
+    syncFsClass();
+
+    if (autoFs) {
+      // Browsers only allow fullscreen from a user gesture: the first tap / click / key press anywhere does it.
+      if (hint) { hint.hidden = false; hint.addEventListener('click', (e) => { e.stopPropagation(); enterFullscreen(); }); }
+      const firstGesture = (e) => {
+        if (!armed || isFullscreen()) return;
+        if (e.type === 'keydown' && (e.altKey || e.ctrlKey || e.metaKey || e.key === 'Escape' || e.key === 'Tab')) return;
+        enterFullscreen();
+      };
+      // pointerup (not down) so a swipe still navigates and doesn't fight the fullscreen resize
+      window.addEventListener('pointerup', firstGesture, { passive: true });
+      window.addEventListener('keydown', firstGesture);
+    } else if (hint) {
+      hint.remove();
+    }
 
     // ---- Idle cursor ----------------------------------------------------------
     let idleTimer = null;

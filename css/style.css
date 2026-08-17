@@ -254,6 +254,33 @@ body.is-idle .dots { opacity: 0.25; }
   outline-offset: 3px;
 }
 
+/* Fullscreen hint (first gesture enters fullscreen) */
+.fs-hint {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.55);
+  color: rgba(255, 255, 255, 0.75);
+  font: 500 12px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0.85;
+  transition: opacity 0.4s ease, background 0.3s ease;
+}
+.fs-hint:hover { opacity: 1; background: rgba(20, 20, 20, 0.8); }
+.fs-hint[hidden] { display: none; }
+body.is-idle .fs-hint { opacity: 0.35; }
+body.is-fullscreen .fs-hint { display: none; }
+
 /* --------------------------------------------------------------------------
    Loader
    -------------------------------------------------------------------------- */

@@ -48,14 +48,33 @@ Every page is a stack:
 | ← / → , PageUp / PageDown, Space, 1-3 | previous / next / jump |
 | Swipe (touch) or drag (mouse) | previous / next |
 | Dots at the bottom | jump |
-| **F** or double-click | fullscreen |
+| **F** or double-click | toggle fullscreen |
 
 After any user input autoplay pauses for 10 s, then resumes.
+
+## Fullscreen
+
+Browsers do not allow a page to go fullscreen on its own (a user gesture is required), so:
+
+* **First tap / click / key press anywhere enters fullscreen** automatically (a small
+  "اضغط لملء الشاشة" pill is shown until then). If someone leaves fullscreen on purpose (Esc / F),
+  the page stops re-entering by itself; the pill brings it back. Disable with `?fs=0` in the URL.
+* **Install it as an app** (Chrome/Edge: address bar → "Install", Android: "Add to Home screen",
+  iOS Safari: Share → "Add to Home Screen"). The included `manifest.webmanifest` uses
+  `display: fullscreen`, so the installed app opens fullscreen with no gesture at all — the best
+  option for a tablet on the counter.
+* **Kiosk mode** for a Windows PC / TV stick that should boot straight into the menu:
+
+  ```
+  "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk --noerrdialogs --disable-infobars https://haitham-wj.github.io/tornado-shawarma-menu/
+  ```
+  (put a shortcut with this command in the Startup folder). Edge: `msedge.exe --kiosk <url> --edge-kiosk-type=fullscreen`.
 
 ## Project structure
 
 ```
 index.html
+manifest.webmanifest       installable web app (opens fullscreen when installed)
 css/style.css              layout, stage aspect ratio, feathered crops, background, controls
 js/config.js               ALL timings, choreography per page, layer geometry tweaks
 js/layers.js               builds page DOM from manifest.json
@@ -69,6 +88,7 @@ assets/
   manifest.json
   page1_full.png  page2_full.png  page3_full.png
   page1/ page2/ page3/     the crops
+  icons/                   app icons (from the brand logo)
 scripts/embed-manifest.js  regenerates js/manifest-data.js (npm run manifest:embed)
 ```
 

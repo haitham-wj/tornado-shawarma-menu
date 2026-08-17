@@ -20,6 +20,12 @@ TornadoMenu.CONFIG = {
   reducedMotionFade: 0.7,
   autoplayResumeDelay: 10,  // seconds of silence after user input before autoplay resumes
 
+  // ---- Fullscreen ----------------------------------------------------------
+  // Browsers refuse fullscreen without a user gesture, so "auto" means: the FIRST tap / click / key
+  // press anywhere enters fullscreen (a small hint is shown until then). Disable with ?fs=0 in the URL.
+  // For a truly automatic fullscreen use kiosk mode or install the page as an app (see README).
+  autoFullscreen: true,
+
   // ---- Feel ----------------------------------------------------------------
   cinematicEase: '0.22, 1, 0.36, 1',    // cubic-bezier used for page transitions
   motionBlur: true,                     // subtle CSS blur while pages slide (auto-off on weak devices)
