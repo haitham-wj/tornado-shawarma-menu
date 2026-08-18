@@ -53,7 +53,7 @@
     const W = pageData.width;
     const H = pageData.height;
     const fullSrc = base + pageData.full;
-    const chor = NS.CONFIG.choreography[pageKey] || [];
+    const chor = NS.CONFIG.choreography[pageKey] || (/^l\d+$/.test(pageKey) ? NS.CONFIG.choreography.landscape : []);
     const glowFor = new Set(chor.filter((s) => s.glow).map((s) => s.layer));
 
     const page = el('section', 'page');

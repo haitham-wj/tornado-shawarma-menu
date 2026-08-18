@@ -5,15 +5,25 @@
   const NS = window.TornadoMenu;
   const C = NS.CONFIG;
 
+  // ---- Artwork set (portrait pages vs landscape slides) ------------------------
+  function pickSetName() {
+    const forced = new URLSearchParams(location.search).get('set');
+    if (forced && C.sets[forced]) return forced;
+    const aspect = window.innerWidth / Math.max(1, window.innerHeight);
+    return aspect >= C.landscapeMinAspect && C.sets.landscape ? 'landscape' : 'portrait';
+  }
+
   // ---- Manifest ---------------------------------------------------------------
-  async function loadManifest() {
+  async function loadManifest(setName) {
+    const set = C.sets[setName];
     try {
-      const res = await fetch(C.manifestUrl, { cache: 'no-cache' });
+      const res = await fetch(set.manifestUrl, { cache: 'no-cache' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return await res.json();
     } catch (err) {
-      // file:// or offline: fall back to the embedded copy (js/manifest-data.js)
-      if (window.TORNADO_MANIFEST) return window.TORNADO_MANIFEST;
+      // file:// or offline: fall back to the embedded copies (js/manifest-data.js)
+      const emb = window.TORNADO_MANIFESTS && window.TORNADO_MANIFESTS[setName];
+      if (emb) return emb;
       throw err;
     }
   }
@@ -48,7 +58,7 @@
 
     function scheduleNext(userTriggered) {
       if (autoTimer) autoTimer.kill();
-      let delay = NS.reducedMotion ? C.reducedMotionHold : C.pageDuration;
+      let delay = NS.reducedMotion ? C.reducedMotionHold : (NS.activeSet ? NS.activeSet.pageDuration : C.pageDuration);
       if (userTriggered) delay = Math.max(delay, C.autoplayResumeDelay);
       autoTimer = gsap.delayedCall(delay, () => goTo((current + 1) % pages.length, { dir: 1 }));
     }
@@ -56,9 +66,9 @@
     function goTo(index, opts) {
       opts = opts || {};
       index = ((index % pages.length) + pages.length) % pages.length;
-      if (index === current && !opts.force) {
+      if (index === current) {
         // Re-selecting the current page: just restart its entrance.
-        if (opts.user) restartCurrent();
+        if (opts.user || opts.force) restartCurrent();
         return;
       }
       const dir = opts.dir != null ? opts.dir : (index > current ? 1 : -1);
@@ -107,16 +117,29 @@
     const loader = document.getElementById('loader');
     const loaderFill = document.getElementById('loaderFill');
 
+    const setName = pickSetName();
+    const set = Object.assign({ name: setName }, C.sets[setName]);
+    NS.activeSet = set;
+    document.body.dataset.set = setName;
+    if (set.fill) stageEl.classList.add('stage--fill');
+
     let manifest;
     try {
-      manifest = await loadManifest();
+      manifest = await loadManifest(setName);
     } catch (err) {
-      console.error('[TornadoMenu] could not load manifest.json', err);
-      loader.innerHTML = '<p style="opacity:.6;font-size:14px">Could not load assets/manifest.json</p>';
+      console.error('[TornadoMenu] could not load manifest', set.manifestUrl, err);
+      loader.innerHTML = '<p style="opacity:.6;font-size:14px">Could not load ' + set.manifestUrl + '</p>';
       return;
     }
 
-    const order = C.pageOrder.filter((k) => manifest.pages[k]);
+    // If the screen shape changes enough to need the other set (e.g. a tablet rotated), reload.
+    window.addEventListener('resize', () => {
+      if (pickSetName() === setName) return;
+      clearTimeout(window.__tmReloadT);
+      window.__tmReloadT = setTimeout(() => { if (pickSetName() !== setName) location.reload(); }, 600);
+    });
+
+    const order = set.pageOrder.filter((k) => manifest.pages[k]);
     if (!order.length) { console.error('[TornadoMenu] no pages in manifest'); return; }
 
     // Stage aspect ratio from the artwork itself

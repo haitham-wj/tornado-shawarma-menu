@@ -5,14 +5,21 @@
 window.TornadoMenu = window.TornadoMenu || {};
 
 TornadoMenu.CONFIG = {
-  manifestUrl: 'assets/manifest.json',
   assetsBase: 'assets/',
 
-  // Order in which the pages loop
-  pageOrder: ['page1', 'page2', 'page3'],
+  // ---- Artwork sets ----------------------------------------------------------
+  // portrait : the 3 approved pages (phones, tablets held upright, portrait signage)
+  // landscape: 6 slides (one menu section each) composed from exact crops of the same pages,
+  //            filling 16:9 TV screens edge to edge with ~2x bigger text (tools/make_landscape.py)
+  // The set is chosen from the screen shape; force one with ?set=portrait or ?set=landscape.
+  sets: {
+    portrait:  { manifestUrl: 'assets/manifest.json',           pageOrder: ['page1', 'page2', 'page3'], pageDuration: 7.0, fill: false },
+    landscape: { manifestUrl: 'assets/landscape/manifest.json', pageOrder: ['l1', 'l2', 'l3', 'l4', 'l5', 'l6'], pageDuration: 6.5, fill: true },
+  },
+  landscapeMinAspect: 1.2,  // viewport width/height at or above this -> landscape set
 
   // ---- Timing --------------------------------------------------------------
-  pageDuration: 7.0,        // start of one page -> start of the next (entrance + hold)
+  pageDuration: 7.0,        // start of one page -> start of the next (entrance + hold); sets may override
   transitionDuration: 1.05, // cinematic horizontal slide between complete pages
   revealDuration: 0.5,      // dark veil lifting off the untouched full page
   layersFadeDuration: 0.3,  // animated crops fading out on top of the full page
@@ -42,6 +49,13 @@ TornadoMenu.CONFIG = {
   // 'from' values are the START state; every layer always ends at its exact manifest position.
   // x/y are in px at a 1122px-wide stage and are scaled to the rendered size at runtime.
   choreography: {
+    // Landscape slides (l1..l6) all share the same 4 layers -> one template
+    landscape: [
+      { layer: 'header', at: 0.20, dur: 0.70, from: { y: -25, opacity: 0 }, ease: 'power2.out' },
+      { layer: 'food',   at: 0.55, dur: 1.00, from: { x: -80, scale: 0.92, opacity: 0 }, ease: 'back.out(1.25)', glow: true },
+      { layer: 'text',   at: 0.95, dur: 0.85, from: { x: 50, opacity: 0 }, ease: 'power3.out' },
+      { layer: 'footer', at: 1.40, dur: 0.60, from: { y: 20, opacity: 0 }, ease: 'power2.out' },
+    ],
     page1: [
       { layer: 'header',        at: 0.20, dur: 0.70, from: { y: -25, opacity: 0 }, ease: 'power2.out' },
       { layer: 'shawarma_food', at: 0.60, dur: 0.95, from: { x: -80, scale: 0.92, opacity: 0 }, ease: 'back.out(1.35)', glow: true },
@@ -77,13 +91,13 @@ TornadoMenu.CONFIG = {
   //
   // `box`  : final rectangle a layer occupies. Anything outside the manifest crop is filled with
   //          the exact same pixels taken from the untouched full-page PNG (never redrawn).
-  // `cut`  : polygon (page px) that limits the visible region of the layer.
+  // `cut`  : optional polygon (page px) that limits the visible region of the layer.
   // `sprite`: layer that has no crop file — it is a rectangle of the full-page PNG.
   // Every value below was measured on the approved PNGs; nothing is regenerated.
   layout: {
     page1: {
-      header:        { box: [220, 15, 900, 440], cut: [[220, 15], [900, 15], [900, 440], [548, 440], [548, 393], [220, 393]] },
-      shawarma_food: { box: [0, 393, 548, 882] },
+      header:        { box: [220, 15, 900, 432] },   // title descender + ornament end at y=431; the plate starts at 434
+      shawarma_food: { box: [0, 432, 548, 882] },
       arabic_food:   { box: [0, 882, 520, 1312] },
       footer:        { box: [25, 1314, 1075, 1385] },
     },
@@ -95,8 +109,8 @@ TornadoMenu.CONFIG = {
       footer:              { box: [25, 1241, 1070, 1325] },
     },
     page3: {
-      header:      { box: [220, 15, 900, 432], cut: [[220, 15], [900, 15], [900, 432], [395, 432], [395, 393], [220, 393]] },
-      burger_food: { box: [0, 393, 522, 874], cut: [[0, 393], [395, 393], [395, 432], [522, 432], [522, 874], [0, 874]] },
+      header:      { box: [220, 15, 900, 424] },   // title descender + ornament end at y=423; the burger ring starts at 424
+      burger_food: { box: [0, 424, 522, 874] },
       divider:     { sprite: true, box: [60, 875, 1060, 900], after: 'burger_text' },
       extras_food: { box: [0, 900, 590, 1266] },
       extras_text: { box: [590, 900, 1085, 1215] },

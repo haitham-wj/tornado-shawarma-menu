@@ -18,6 +18,20 @@ The page also works by simply opening `index.html` in a browser (a bundled copy 
 is used when `fetch()` is not available on `file://`). For a restaurant screen, open the URL in
 Chrome/Edge and press **F** (or double-click) for fullscreen; the cursor hides by itself.
 
+## Two artwork sets (chosen automatically from the screen shape)
+
+| Screen | Set | What is shown |
+|---|---|---|
+| TV / desktop / laptop / tablet held sideways (aspect ≥ 1.2) | **landscape** | 6 slides (one menu section each) that fill a 16:9 screen edge to edge, text ~2× bigger than the portrait page would be on the same screen |
+| phone / tablet held upright | **portrait** | the 3 approved pages as they are |
+
+The landscape slides in `assets/landscape/` are **not a redesign**: `tools/make_landscape.py` composes
+them purely from exact pixel crops of the approved pages (logo/title block, food photo, section text
+with prices, footer bar), scaled with Lanczos and placed on a background made from an empty texture
+patch of the same artwork (luminance-matched under every piece so no seams show). Regenerate with
+`python tools/make_landscape.py` (needs Pillow + numpy) after changing the portrait pages.
+Force a set with `?set=portrait` or `?set=landscape`.
+
 ## How it works
 
 Every page is a stack:
@@ -88,7 +102,9 @@ assets/
   manifest.json
   page1_full.png  page2_full.png  page3_full.png
   page1/ page2/ page3/     the crops
+  landscape/               16:9 slides l1..l6 + crops + manifest.json (generated)
   icons/                   app icons (from the brand logo)
+tools/make_landscape.py    builds assets/landscape/ from the approved pages
 scripts/embed-manifest.js  regenerates js/manifest-data.js (npm run manifest:embed)
 ```
 
@@ -96,7 +112,8 @@ scripts/embed-manifest.js  regenerates js/manifest-data.js (npm run manifest:emb
 
 Everything lives in `js/config.js`:
 
-* `pageDuration`, `transitionDuration`, `revealDuration`, `autoplayResumeDelay`
+* `sets` (per-set `pageDuration`, page order, fill mode), `landscapeMinAspect`
+* `transitionDuration`, `revealDuration`, `autoplayResumeDelay`
 * `choreography.pageN[]` — order, delay (`at`), duration and start offsets of every crop
 * `motionBlur`, `veilBlur`, `holdBreathe`, `particles`
 * `layout` — layer geometry tweaks (see below)

@@ -33,7 +33,7 @@
   NS.buildEntrance = function buildEntrance(page, stageEl) {
     const tl = gsap.timeline({ paused: true });
     const s = pxScale(page, stageEl);
-    const steps = C.choreography[page.key] || [];
+    const steps = C.choreography[page.key] || (/^l\d+$/.test(page.key) ? C.choreography.landscape : []);
     const allLayers = Object.values(page.layers).map((l) => l.el);
     const allGlows = Object.values(page.layers).map((l) => l.glow).filter(Boolean);
     const allInners = Object.values(page.layers).map((l) => l.inner);
@@ -106,7 +106,7 @@
     // ---- Hold: imperceptible breathe on the whole page (design itself untouched) ----
     if (C.holdBreathe) {
       const holdStart = revealAt + C.revealDuration + C.layersFadeDuration;
-      const holdLen = Math.max(1, C.pageDuration - holdStart);
+      const holdLen = Math.max(1, (NS.activeSet ? NS.activeSet.pageDuration : C.pageDuration) - holdStart);
       tl.to(page.el, { scale: C.holdBreatheScale, duration: holdLen, ease: 'sine.inOut' }, holdStart);
     }
 
