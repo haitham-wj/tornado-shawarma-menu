@@ -80,7 +80,7 @@ Browsers do not allow a page to go fullscreen on its own (a user gesture is requ
 * **Kiosk mode** for a Windows PC / TV stick that should boot straight into the menu:
 
   ```
-  "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk --noerrdialogs --disable-infobars https://haitham-wj.github.io/tornado-shawarma-menu/
+  "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk --noerrdialogs --disable-infobars https://haitham-wj.github.io/menu/
   ```
   (put a shortcut with this command in the Startup folder). Edge: `msedge.exe --kiosk <url> --edge-kiosk-type=fullscreen`.
 
